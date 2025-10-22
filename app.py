@@ -41,7 +41,6 @@ def load_data():
         st.error(f"讀取資料錯誤: {str(e)}")
         return None
 
-@st.cache_data
 def train_model(model_name, X_train, y_train, X_test, y_test):
     if model_name == "Random Forest":
         model = RandomForestClassifier(n_estimators=100, random_state=42)
