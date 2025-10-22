@@ -1,11 +1,9 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
-import plotly.express as px
 import os
 
 # Set page configuration
@@ -96,20 +94,10 @@ with tab1:
 with tab2:
     st.header("數據分析")
     
-    # Display class distribution
-    st.subheader("類別分布")
-    class_dist = df['col_0'].value_counts()
-    fig = px.pie(values=class_dist.values, names=class_dist.index, 
-                 title="Ham vs Spam Distribution")
-    st.plotly_chart(fig)
-    
-    # Display message length distribution
-    st.subheader("郵件長度分布")
-    df['message_length'] = df['text_clean'].str.len()
-    fig = px.histogram(df, x='message_length', color='col_0', 
-                      title="Message Length Distribution by Class",
-                      labels={'message_length': 'Message Length', 'col_0': 'Class'})
-    st.plotly_chart(fig)
+    # Display basic statistics
+    st.subheader("數據統計")
+    st.write("垃圾郵件比例:", f"{(df['col_0'] == 'spam').mean():.2%}")
+    st.write("總數據量:", len(df))
     
     # Model performance metrics
     st.subheader("模型性能")
