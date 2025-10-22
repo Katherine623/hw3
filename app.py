@@ -26,7 +26,16 @@ with st.sidebar:
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv("sms_spam_clean.csv")
+        df = pd.read_csv("sms_spam_clean.csv", encoding='utf-8')
+        # 清理欄位名稱（移除空格）
+        df.columns = df.columns.str.strip()
+        # 確保必要欄位存在
+        if 'text_clean' not in df.columns:
+            st.error(f"找不到 'text_clean' 欄位。現有欄位: {list(df.columns)}")
+            return None
+        if 'col_0' not in df.columns:
+            st.error(f"找不到 'col_0' 欄位。現有欄位: {list(df.columns)}")
+            return None
         return df
     except Exception as e:
         st.error(f"讀取資料錯誤: {str(e)}")
