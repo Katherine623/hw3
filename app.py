@@ -6,6 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import plotly.express as px
+import os
 
 # Set page configuration
 st.set_page_config(
@@ -23,11 +24,28 @@ st.markdown("""
 # Load and preprocess data
 @st.cache_data
 def load_data():
-    df = pd.read_csv('sms_spam_clean.csv')
-    return df
+    try:
+        # Get the directory of the current file
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the full path to the CSV file
+        file_path = os.path.join(current_dir, 'sms_spam_clean.csv')
+        
+        if not os.path.exists(file_path):
+            st.error(f"Data file not found at: {file_path}")
+            return None
+            
+        df = pd.read_csv(file_path)
+        return df
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        st.error("Please make sure the data file 'sms_spam_clean.csv' is in the same directory as the app.")
+        return None
 
 # Load the data
 df = load_data()
+
+if df is None:
+    st.stop()
 
 # Create tabs
 tab1, tab2 = st.tabs(["預測", "數據分析"])
