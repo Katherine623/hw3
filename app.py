@@ -86,10 +86,29 @@ df = load_data()
 if df is None:
     st.stop()
 
-vectorizer = TfidfVectorizer(max_features=max_features)
-X = vectorizer.fit_transform(df["text_clean"])
-y = (df["col_0"] == "spam").astype(int)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+# 資料預處理和驗證
+try:
+    # 移除空值
+    df = df.dropna(subset=['text_clean', 'col_0'])
+    
+    # 確保 text_clean 是字串類型
+    df['text_clean'] = df['text_clean'].astype(str)
+    
+    # 移除空白文本
+    df = df[df['text_clean'].str.strip() != '']
+    
+    # 重置索引
+    df = df.reset_index(drop=True)
+    
+    vectorizer = TfidfVectorizer(max_features=max_features)
+    X = vectorizer.fit_transform(df["text_clean"])
+    y = (df["col_0"] == "spam").astype(int)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+except Exception as e:
+    st.error(f"資料處理錯誤: {str(e)}")
+    st.error(f"資料框欄位: {list(df.columns)}")
+    st.error(f"資料框形狀: {df.shape}")
+    st.stop()
 
 tab1, tab2, tab3, tab4 = st.tabs([" 數據概覽", " 模型訓練", " 即時預測", " 性能分析"])
 
