@@ -4,21 +4,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
-import nltk
-from nltk.corpus import stopwords
+from sklearn.metrics import accuracy_score
 import plotly.express as px
-import plotly.graph_objects as go
-
-# Download required NLTK data
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords')
 
 # Set page configuration
 st.set_page_config(
@@ -85,26 +72,8 @@ with tab1:
             st.write(f"垃圾郵件機率: {probability[0][1]:.2%}")
             st.write(f"正常郵件機率: {probability[0][0]:.2%}")
             
-            # Create a gauge chart for spam probability
-            fig = go.Figure(go.Indicator(
-                mode = "gauge+number",
-                value = probability[0][1] * 100,
-                title = {'text': "垃圾郵件機率"},
-                domain = {'x': [0, 1], 'y': [0, 1]},
-                gauge = {
-                    'axis': {'range': [None, 100]},
-                    'steps': [
-                        {'range': [0, 50], 'color': "lightgreen"},
-                        {'range': [50, 100], 'color': "lightcoral"}
-                    ],
-                    'threshold': {
-                        'line': {'color': "red", 'width': 4},
-                        'thickness': 0.75,
-                        'value': 50
-                    }
-                }
-            ))
-            st.plotly_chart(fig)
+            # Display probability bar
+            st.progress(float(probability[0][1]))
 
 with tab2:
     st.header("數據分析")
@@ -144,8 +113,7 @@ with tab2:
         st.metric("模型準確率", f"{accuracy_score(y_test, y_pred):.2%}")
     
     with col2:
-        report = classification_report(y_test, y_pred, output_dict=True)
-        st.metric("F1 分數 (Spam)", f"{report['1']['f1-score']:.2%}")
+        st.metric("預測正確率", f"{accuracy_score(y_test, y_pred):.2%}")
 
 # Footer
 st.markdown("---")
